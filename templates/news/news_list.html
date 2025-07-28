@@ -3,15 +3,67 @@
 
 {% block content %}
     <h1>Новости</h1>
+
+    <form method="get">
+        {{ filterset.form.as_p }}
+        <button type="submit">Фильтровать</button>
+    </form>
+
     <ul>
     {% for article in news_list %}
         <li>
-            <a href="{% url 'news_detail' article.id %}">{{ article.title|censor }}</a>
+            <a href="{% url 'news_detail' article.pk %}">{{ article.title|censor }}</a>
             <br>
-            {{ article.date|date:"d.m.Y" }}
+            {{ article.created_at|date:"d.m.Y" }}
             <br>
-            {{ article.text|censor|slice:":20" }}
+            {{ article.text|censor|slice:":20" }}...
         </li>
+    {% empty %}
+        <li>Новостей нет</li>
     {% endfor %}
     </ul>
+
+    {% if is_paginated %}
+    <nav aria-label="Page navigation">
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page=1">Первая</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}">Назад</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">Первая</span></li>
+          <li class="page-item disabled"><span class="page-link">Назад</span></li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+          {% if num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+            {% if num == page_obj.number %}
+              <li class="page-item active" aria-current="page">
+                <span class="page-link">{{ num }}</span>
+              </li>
+            {% else %}
+              <li class="page-item">
+                <a class="page-link" href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page={{ num }}">{{ num }}</a>
+              </li>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.next_page_number }}">Вперёд</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.paginator.num_pages }}">Последняя</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">Вперёд</span></li>
+          <li class="page-item disabled"><span class="page-link">Последняя</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
 {% endblock %}

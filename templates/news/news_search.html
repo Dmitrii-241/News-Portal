@@ -1,0 +1,43 @@
+{% extends 'default.html' %}
+
+{% block content %}
+<h1>Поиск новостей</h1>
+
+<form method="get">
+    {{ filterset.form.as_p }}
+    <button type="submit">Искать</button>
+</form>
+
+<ul>
+  {% for article in news_list %}
+    <li>
+      <a href="{% url 'news_detail' article.pk %}">{{ article.title }}</a> — {{ article.author }} — {{ article.created_at|date:"d.m.Y" }}
+    </li>
+  {% empty %}
+    <li>Ничего не найдено</li>
+  {% endfor %}
+</ul>
+
+<div class="pagination">
+  {% if page_obj.has_previous %}
+    <a href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page=1">Первая</a>
+    <a href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}">Назад</a>
+  {% endif %}
+
+  {% for num in page_obj.paginator.page_range %}
+    {% if num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+      {% if num == page_obj.number %}
+        <strong>{{ num }}</strong>
+      {% else %}
+        <a href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page={{ num }}">{{ num }}</a>
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+
+  {% if page_obj.has_next %}
+    <a href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.next_page_number }}">Вперед</a>
+    <a href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.paginator.num_pages }}">Последняя</a>
+  {% endif %}
+</div>
+
+{% endblock %}
