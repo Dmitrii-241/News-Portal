@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Профиль пользователя {{ user.username }}</h1>
+  <p>Email: {{ user.email }}</p>
+
+  {# Если есть дополнительные данные профиля, добавьте их здесь #}
+  {# <p>Полное имя: {{ profile.full_name }}</p> #}
+
+  {# Сообщения (если используете messages framework) #}
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li>{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {# Кнопка "Стать автором", если пользователь не в группе authors #}
+  {% if not user.groups.filter(name='authors').exists %}
+    <form method="post" action="{% url 'become_author' %}">
+      {% csrf_token %}
+      <button type="submit">Стать автором</button>
+    </form>
+  {% else %}
+    <p>Вы уже являетесь автором.</p>
+  {% endif %}
+
+{% endblock %}

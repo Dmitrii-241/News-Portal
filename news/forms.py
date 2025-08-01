@@ -4,9 +4,7 @@ from .models import Post
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        # Укажите поля точно так же, как в вашей модели
-        fields = ['title', 'text', 'author', 'created_at', 'categories']
+        fields = ['title', 'text', 'author', 'categories']  # Уберите 'created_at'
         widgets = {
-            'created_at': forms.DateInput(attrs={'type': 'date'}),
             'categories': forms.CheckboxSelectMultiple(),
         }

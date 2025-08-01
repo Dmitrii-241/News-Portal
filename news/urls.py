@@ -1,8 +1,9 @@
 from django.urls import path
 from .views import (
     NewsListView, NewsDetailView, NewsSearchView,
-    NewsCreateView, ArticleCreateView,
-    PostUpdateView, PostDeleteView
+    NewsCreateView, ArticleCreateView, ArticleListView,
+    PostUpdateView, PostDeleteView, ProfileView,
+    become_author,  # импортим функцию для добавления в группу авторов
 )
 
 urlpatterns = [
@@ -15,7 +16,14 @@ urlpatterns = [
     path('news/<int:pk>/delete/', PostDeleteView.as_view(), name='news_delete'),
 
     # Статьи
+    path('articles/', ArticleListView.as_view(), name='article_list'),
     path('articles/create/', ArticleCreateView.as_view(), name='article_create'),
     path('articles/<int:pk>/edit/', PostUpdateView.as_view(), name='article_edit'),
     path('articles/<int:pk>/delete/', PostDeleteView.as_view(), name='article_delete'),
+
+    # Профиль пользователя
+    path('profile/', ProfileView.as_view(), name='profile'),
+
+    # Стать автором
+    path('become-author/', become_author, name='become_author'),
 ]
